@@ -1,12 +1,11 @@
-import asyncio
 from functools import partial
 from http import HTTPStatus
 from typing import Literal
-from tqdm.asyncio import tqdm
 
 import aiohttp
 import pandas as pd
 import requests
+from tqdm.asyncio import tqdm
 
 from aiod.authentication.authentication import _get_auth_headers, get_token
 from aiod.calls.urls import (
