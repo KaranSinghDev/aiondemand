@@ -2,6 +2,7 @@ import asyncio
 from functools import partial
 from http import HTTPStatus
 from typing import Literal
+from tqdm.asyncio import tqdm
 
 import aiohttp
 import pandas as pd
@@ -474,6 +475,7 @@ async def get_assets_async(
     asset_type: str,
     version: str | None = None,
     data_format: Literal["pandas", "json"] = "pandas",
+    show_progress: bool = False,
 ) -> pd.DataFrame | list[dict]:
     """Asynchronously retrieve metadata for a list of ASSET_TYPE identifiers.
 
@@ -487,18 +489,14 @@ async def get_assets_async(
         The version of the endpoint (default is None).
     data_format
         The desired format for the response (default is "pandas").
-        For "json" formats, the returned type is a json decoded type, in this case a list of dicts.
-
-    Returns
-    -------
-    :
-        The retrieved metadata for the specified ASSET_TYPE.
+        For "json" formats, the returned type is a json decoded type, i.e. in this case a list of dicts.
+    show_progress:
+        If True, display a progress bar (default is False).
     """
     urls = [url_to_get_asset(asset_type, identifier, version) for identifier in identifiers]
-    response_data = await _fetch_resources(urls)
+    response_data = await _fetch_resources(urls, show_progress=show_progress)
     resources = format_response(response_data, data_format)
     return resources
-
 
 async def get_list_async(
     *,
@@ -508,6 +506,7 @@ async def get_list_async(
     batch_size: int = 10,
     version: str | None = None,
     data_format: Literal["pandas", "json"] = "pandas",
+    show_progress: bool = False,
 ) -> pd.DataFrame | list[dict]:
     """Asynchronously retrieve a list of ASSET_TYPE from the catalogue in batches.
 
@@ -515,12 +514,18 @@ async def get_list_async(
 
     Parameters
     ----------
-        offset: The offset for pagination (default is 0).
-        limit: The maximum number of items to retrieve (default is 10).
-        batch_size: The number of items in a a batch.
-        version: The version of the endpoint (default is None).
-        data_format: The desired format for the response (default is "pandas").
-            For "json" formats, the returned type is a json decoded type, in this case a list of dicts.
+    offset: 
+        The offset for pagination (default is 0).
+    limit: 
+        The maximum number of items to retrieve (default is 10).
+    batch_size: 
+        The number of items in a batch.
+    version: 
+        The version of the endpoint (default is None).
+    data_format: 
+        The desired format for the response (default is "pandas").
+    show_progress: 
+        If True, display a progress bar (default is False).
 
     Returns
     -------
@@ -541,20 +546,33 @@ async def get_list_async(
 
     urls = [url_to_get_list(asset_type, offset, limit, version) for offset, limit in zip(offsets, batch_sizes, strict=False)]
 
-    response_data = await _fetch_resources(urls)
+    response_data = await _fetch_resources(urls, show_progress=show_progress)
     flattened_response_data = [response for batch in response_data for response in batch]
     resources = format_response(flattened_response_data, data_format)
     return resources
 
 
-async def _fetch_resources(urls) -> list[dict]:
+async def _fetch_resources(urls, show_progress: bool = False) -> list[dict]:
+    """Fetch resources from the provided URLs.
+
+    Parameters
+    ----------
+    urls:
+        A list of URLs to fetch data from.
+    show_progress:
+        If True, display a progress bar (default is False).
+    """
     async def _fetch_data(session, url) -> dict:
         async with session.get(url, timeout=config.request_timeout_seconds) as response:
             return await response.json()
 
     async with aiohttp.ClientSession() as session:
         tasks = [_fetch_data(session, url) for url in urls]
-        response_data = await asyncio.gather(*tasks)
+        response_data = await tqdm.gather(
+            *tasks, 
+            disable=not show_progress, 
+            desc="AIoD: Fetching assets"
+        )
     return response_data
 
 
