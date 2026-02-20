@@ -7,7 +7,7 @@ authors = [
 ]
 readme = "docs/README.md"
 requires-python = ">=3.10"
-dependencies = ["aiohttp", "pandas", "python-keycloak", "requests", "tomlkit"]
+dependencies = ["aiohttp", "pandas", "python-keycloak", "requests", "tomlkit", "tqdm"]
 license = "MIT"
 dynamic = ["version"]
 
