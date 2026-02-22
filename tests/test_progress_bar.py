@@ -1,6 +1,8 @@
 import asyncio
-import aiod
+
 from aioresponses import aioresponses
+
+import aiod
 from aiod.calls.urls import server_url
 
 def test_get_assets_async_with_progress_bar():
