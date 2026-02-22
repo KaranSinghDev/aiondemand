@@ -17,7 +17,7 @@ dependencies = [
     "requests",
     "scikit-base",
     "tomlkit",
-    "tqdm",
+    "tqdm"
 ]
 
 [project.optional-dependencies]
