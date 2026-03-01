@@ -83,7 +83,8 @@ def get_list(
         The version of the endpoint (default is None).
     data_format
         The desired format for the response (default is "pandas").
-        For "json" formats, the returned type is a json decoded type, i.e. in this case a list of dicts.
+        For "json" formats, the returned type is a json decoded type, i.e. in this case
+        a list of dicts.
 
     Returns
     -------
@@ -198,7 +199,8 @@ def patch_asset(
 
     Notes
     -----
-    This is a best-effort implementation, but is not yet officially supported by the server.
+    This is a best-effort implementation, but is not yet officially supported
+    by the server.
 
     Parameters
     ----------
@@ -322,7 +324,8 @@ def get_asset(
         The version of the endpoint (default is None).
     data_format
         The desired format for the response (default is "pandas").
-        For "json" formats, the returned type is a json decoded type, in this case a dict.
+        This is a best-effort implementation, but is not yet officially supported
+    by the server.
 
     Returns
     -------
@@ -356,9 +359,10 @@ def get_asset_from_platform(
     version: str | None = None,
     data_format: Literal["pandas", "json"] = "pandas",
 ) -> pd.Series | dict:
-    """Retrieve metadata for a specific ASSET_TYPE identified by the external platform identifier.
+    """Retrieve metadata for an asset from an external platform.
 
-    All parameters must be specified by name.
+    Retrieve metadata for a specific ASSET_TYPE identified by the external
+    platform identifier. All parameters must be specified by name.
 
     Parameters
     ----------
@@ -370,7 +374,8 @@ def get_asset_from_platform(
         The version of the endpoint (default is None).
     data_format
         The desired format for the response (default is "pandas").
-        For "json" formats, the returned type is a json decoded type, in this case a dict.
+        For "json" formats, the returned type is a json decoded type, in this
+        case a dict.
 
     Returns
     -------
@@ -385,7 +390,8 @@ def get_asset_from_platform(
         "detail"
     ):
         raise KeyError(
-            f"No {asset_type} with of {platform!r} with identifier {platform_identifier!r} found."
+            f"No {asset_type} with of {platform!r} with identifier "
+            f"{platform_identifier!r} found."
         )
     resources = format_response(res.json(), data_format)
     return resources
@@ -439,23 +445,25 @@ def search(
     data_format: Literal["pandas", "json"] = "pandas",
     asset_type: str,
 ) -> pd.DataFrame | list[dict]:
-    """Search metadata for ASSET_TYPE type using the Elasticsearch endpoint of the AIoD metadata catalogue.
+    """Search metadata using the Elasticsearch endpoint.
 
-    All parameters except `query` must be specified by name.
+    Search metadata for ASSET_TYPE type using the Elasticsearch endpoint
+    of the AIoD metadata catalogue. All parameters except `query` must be 
+    specified by name.
 
     Parameters
     ----------
     search
         The string to be matched against the search fields.
-    platforms
+    platforms  
         The platforms to filter the search results.
         If None, results from all platforms will be returned (default is None).
     offset
         The offset for pagination (default is 0).
     limit
         The maximum number of results to retrieve (default is 10).
-    search_field
-        The specific fields to search within. If None, the query will be matched against all fields (default is None).
+    The specific fields to search within. If None, the query will be matched
+        against all fields (default is None).
     get_all
         If true, a request to the database is made to retrieve all data.
         If false, only the indexed information is returned. (default is True).
@@ -463,7 +471,8 @@ def search(
         The version of the endpoint to use (default is None).
     data_format
         The desired format for the response (default is "pandas").
-        For "json" formats, the returned type is a json decoded type, in this case a list of dict's.
+        For "json" formats, the returned type is a json decoded type, in this
+        case a list of dict's.
 
     Returns
     -------
